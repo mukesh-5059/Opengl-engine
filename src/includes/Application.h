@@ -13,6 +13,8 @@ class Application {
         bool m_isRunning;
         bool m_vSync;
         int m_targetFps;
+        float m_frameTimeHistory[100];
+        int m_frameTimeIndex;
 
         bool init();
         void initImGui();

@@ -6,7 +6,8 @@
  #include <imgui/imgui_impl_opengl3.h>
 
 Application::Application(const std::string& title, int width, int height)
-    : m_title(title), m_width(width), m_height(height), m_window(nullptr), m_isRunning(false), m_vSync(true), m_targetFps(60) {
+     : m_title(title), m_width(width), m_height(height), m_window(nullptr), m_isRunning(false), m_vSync(true), m_targetFps(60), m_frameTimeIndex(0) {
+         for (int i = 0; i < 100; i++) m_frameTimeHistory[i] = 0.0f;
 }
 
 Application::~Application() {
@@ -72,6 +73,9 @@ void Application::run() {
         }
 
         lastFrame = currentFrame;
+
+        m_frameTimeHistory[m_frameTimeIndex] = deltaTime * 1000.0f;
+        m_frameTimeIndex = (m_frameTimeIndex + 1) % 100;
 
         processInput();
         update(deltaTime);
@@ -139,9 +143,13 @@ void Application::onGui() {
         ImGui::SliderInt("Target FPS", &m_targetFps, 30, 300);
     }
 
+    ImGui::Separator();
+    ImGui::PlotHistogram("Frame Times", m_frameTimeHistory, 100, m_frameTimeIndex, NULL, 0.0f, 33.3f, ImVec2(0, 80));
+
     ImGui::End();
 }
 
 void Application::framebufferSizeCallback(GLFWwindow* window, int width, int height) {
     glViewport(0, 0, width, height);
 }
+
