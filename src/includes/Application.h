@@ -4,8 +4,14 @@
 #include <GLFW/glfw3.h>
 #include <string>
 
+class ShaderProgram;
+class Mesh;
+
 class Application {
     private:
+        ShaderProgram* m_testShader;
+        Mesh* m_testMesh;
+
         GLFWwindow* m_window;
         std::string m_title;
         int m_width;

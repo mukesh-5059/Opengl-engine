@@ -22,5 +22,5 @@ class Mesh {
         Mesh(const std::vector<Vertex>& vertices, const std::vector<unsigned int>& indices);
         ~Mesh();
 
-        void draw(const ShaderProgram& shader) const;
+        void draw() const;
 };

@@ -5,6 +5,7 @@
 #include <glm/gtc/type_ptr.hpp>
 
 ShaderProgram::ShaderProgram(const char* vertexPath, const char* fragmentPath) {
+    std::cout << "[ShaderProgram] Creating from: " << vertexPath << " and " << fragmentPath << std::endl;
     std::string vertexCode;
     std::string fragmentCode;
     std::ifstream vShaderFile;
@@ -58,6 +59,7 @@ ShaderProgram::ShaderProgram(const char* vertexPath, const char* fragmentPath) {
 }
 
 ShaderProgram::~ShaderProgram() {
+    std::cout << "[ShaderProgram] Deleting program ID: " << m_id << std::endl;
     glDeleteProgram(m_id);
 }
 

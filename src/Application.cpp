@@ -1,18 +1,24 @@
 #include <Application.h>
 #include <iostream>
+#include <ShaderProgram.h>
+#include <Primitive.h>
 
 #include <imgui/imgui.h>
 #include <imgui/imgui_impl_glfw.h>
- #include <imgui/imgui_impl_opengl3.h>
+#include <imgui/imgui_impl_opengl3.h>
 
 Application::Application(const std::string& title, int width, int height)
-     : m_title(title), m_width(width), m_height(height), m_window(nullptr), m_isRunning(false), m_vSync(true), m_targetFps(60), m_frameTimeIndex(0) {
-         for (int i = 0; i < 100; i++) m_frameTimeHistory[i] = 0.0f;
+    : m_testShader(nullptr), m_testMesh(nullptr), m_title(title), m_width(width), m_height(height), m_window(nullptr), m_isRunning(false), m_vSync(true), m_targetFps(60), m_frameTimeIndex(0) {
+    for (int i = 0; i < 100; i++) m_frameTimeHistory[i] = 0.0f;
 }
 
 Application::~Application() {
+    std::cout << "[Application] Shutting down and cleaning up resources..." << std::endl;
     shutdownImGui();
+    delete m_testShader;
+    delete m_testMesh;
     if (m_window) {
+        std::cout << "[Application] Destroying window" << std::endl;
         glfwDestroyWindow(m_window);
     }
     glfwTerminate();
@@ -24,8 +30,8 @@ bool Application::init() {
         return false;
     }
 
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
     m_window = glfwCreateWindow(m_width, m_height, m_title.c_str(), nullptr, nullptr);
@@ -51,6 +57,9 @@ bool Application::init() {
     glViewport(0, 0, m_width, m_height);
 
     initImGui();
+
+    m_testShader = new ShaderProgram("res/shaders/basic.vert", "res/shaders/basic.frag");
+    m_testMesh = Primitive::createSphere();
     
     return true;
 }
@@ -112,6 +121,11 @@ void Application::render() {
     glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     
+    if (m_testShader && m_testMesh) {
+        m_testShader->use();
+        m_testMesh->draw();
+    }
+
     onGui();
 }
 
@@ -152,4 +166,3 @@ void Application::onGui() {
 void Application::framebufferSizeCallback(GLFWwindow* window, int width, int height) {
     glViewport(0, 0, width, height);
 }
-

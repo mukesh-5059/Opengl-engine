@@ -1,11 +1,14 @@
 #include <Mesh.h>
 #include <cstddef>
+#include <iostream>
 
 Mesh::Mesh(const std::vector<Vertex>& vertices, const std::vector<unsigned int>& indices) {
+    std::cout << "[Mesh] Creating Mesh with " << vertices.size() << " vertices and " << indices.size() << " indices" << std::endl;
     setupMesh(vertices, indices);
 }
 
 Mesh::~Mesh() {
+    std::cout << "[Mesh] Deleting Mesh (VAO: " << m_vao << ")" << std::endl;
     glDeleteVertexArrays(1, &m_vao);
     glDeleteBuffers(1, &m_vbo);
     glDeleteBuffers(1, &m_ebo);
@@ -41,7 +44,7 @@ void Mesh::setupMesh(const std::vector<Vertex>& vertices, const std::vector<unsi
     glBindVertexArray(0);
 }
 
-void Mesh::draw(const ShaderProgram& shader) const {
+void Mesh::draw() const {
     glBindVertexArray(m_vao);
     glDrawElements(GL_TRIANGLES, m_indexCount, GL_UNSIGNED_INT, 0);
     glBindVertexArray(0);
