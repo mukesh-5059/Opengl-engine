@@ -1,5 +1,7 @@
-#include <iostream>
-#include "glad/glad.h"
-int main(){
-    std::cout << "Hello new project" << std::endl;
+#include "Application.h"
+
+int main() {
+    Application app("PixelShader Engine", 1280, 720);
+    app.run();
+    return 0;
 }
