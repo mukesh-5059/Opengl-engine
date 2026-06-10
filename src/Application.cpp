@@ -1,22 +1,19 @@
 #include <Application.h>
 #include <iostream>
-#include <ShaderProgram.h>
-#include <Primitive.h>
 
 #include <imgui/imgui.h>
 #include <imgui/imgui_impl_glfw.h>
 #include <imgui/imgui_impl_opengl3.h>
 
 Application::Application(const std::string& title, int width, int height)
-    : m_testShader(nullptr), m_testMesh(nullptr), m_title(title), m_width(width), m_height(height), m_window(nullptr), m_isRunning(false), m_vSync(true), m_targetFps(60), m_frameTimeIndex(0) {
+    : m_activeScene(nullptr), m_title(title), m_width(width), m_height(height), m_window(nullptr), m_isRunning(false), m_vSync(true), m_targetFps(60), m_frameTimeIndex(0) {
     for (int i = 0; i < 100; i++) m_frameTimeHistory[i] = 0.0f;
 }
 
 Application::~Application() {
     std::cout << "[Application] Shutting down and cleaning up resources..." << std::endl;
     shutdownImGui();
-    delete m_testShader;
-    delete m_testMesh;
+    delete m_activeScene;
     if (m_window) {
         std::cout << "[Application] Destroying window" << std::endl;
         glfwDestroyWindow(m_window);
@@ -41,7 +38,10 @@ bool Application::init() {
         return false;
     }
 
+    std::cout << "[Application] Window created: " << m_title << " (" << m_width << "x" << m_height << ")" << std::endl;
+
     glfwMakeContextCurrent(m_window);
+    glfwSetWindowUserPointer(m_window, this);
     glfwSetFramebufferSizeCallback(m_window, framebufferSizeCallback);
 
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
@@ -58,8 +58,7 @@ bool Application::init() {
 
     initImGui();
 
-    m_testShader = new ShaderProgram("res/shaders/basic.vert", "res/shaders/basic.frag");
-    m_testMesh = Primitive::createSphere();
+    m_activeScene = new Scene();
     
     return true;
 }
@@ -114,16 +113,17 @@ void Application::processInput() {
 }
 
 void Application::update(float deltaTime) {
-    // Logic updates will go here (e.g., scene updates)
+    if (m_activeScene) {
+        m_activeScene->update(deltaTime, m_window);
+    }
 }
 
 void Application::render() {
     glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     
-    if (m_testShader && m_testMesh) {
-        m_testShader->use();
-        m_testMesh->draw();
+    if (m_activeScene) {
+        m_activeScene->render(m_width, m_height);
     }
 
     onGui();
@@ -161,8 +161,17 @@ void Application::onGui() {
     ImGui::PlotHistogram("Frame Times", m_frameTimeHistory, 100, m_frameTimeIndex, NULL, 0.0f, 33.3f, ImVec2(0, 80));
 
     ImGui::End();
+
+    if (m_activeScene) {
+        m_activeScene->onGui();
+    }
 }
 
 void Application::framebufferSizeCallback(GLFWwindow* window, int width, int height) {
     glViewport(0, 0, width, height);
+    Application* app = (Application*)glfwGetWindowUserPointer(window);
+    if (app) {
+        app->m_width = width;
+        app->m_height = height;
+    }
 }

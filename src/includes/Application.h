@@ -3,14 +3,12 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <string>
+#include <Scene.h>
 
-class ShaderProgram;
-class Mesh;
 
 class Application {
     private:
-        ShaderProgram* m_testShader;
-        Mesh* m_testMesh;
+        Scene* m_activeScene;
 
         GLFWwindow* m_window;
         std::string m_title;
