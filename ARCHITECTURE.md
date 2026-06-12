@@ -50,6 +50,7 @@ This document outlines the architectural components and coding standards for the
 - **Classes**: `PascalCase` (e.g., `ResourceManager`)
 - **Functions/Local Variables**: `camelCase` (e.g., `initImGui`, `deltaTime`)
 - **Member Variables**: `m_camelCase` (e.g., `m_window`, `m_isRunning`)
+- **Shader Uniforms**: `u_PascalCase` (e.g., `u_BaseColor`, `u_ModelMatrix`)
 
 ### **Project Structure & Rules**
 - **Header Guards**: Use `#pragma once`.
