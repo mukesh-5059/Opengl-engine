@@ -5,6 +5,7 @@
 #include <ShaderProgram.h>
 #include <Material.h>
 #include <Camera.h>
+#include <Texture.h>
 
 class Scene {
     private:
@@ -12,6 +13,8 @@ class Scene {
         Material* m_testMaterial;
         Mesh* m_testMesh;
         Camera* m_camera;
+        Texture* m_testTexture;
+        Texture* m_testTexture1;
 
     public:
         Scene();
