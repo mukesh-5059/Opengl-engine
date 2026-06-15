@@ -162,9 +162,11 @@ void Application::onGui() {
 
     ImGui::End();
 
-    if (m_activeScene) {
+    ImGui::Begin("Debug");
+    if (m_activeScene && ImGui::CollapsingHeader("Scene")) {
         m_activeScene->onGui();
     }
+    ImGui::End();
 }
 
 void Application::framebufferSizeCallback(GLFWwindow* window, int width, int height) {

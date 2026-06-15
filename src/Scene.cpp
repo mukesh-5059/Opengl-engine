@@ -56,8 +56,7 @@ void Scene::onGui() {
         m_camera->onGui();
     }
 
-    if (m_testMaterial) {
-        ImGui::Begin("Material Settings");
+    if (m_testMaterial && ImGui::CollapsingHeader("Material Settings")) {
         glm::vec3 color;
         m_testMaterial->getVec3("u_BaseColor", color);
         if (ImGui::ColorEdit3("Base Color", (float*)&color)) {
@@ -68,7 +67,5 @@ void Scene::onGui() {
         if (ImGui::Checkbox("Use Texture", &useTexture)) {
             m_testMaterial->setInt("u_UseTexture", useTexture ? 1 : 0);
         }
-        
-        ImGui::End();
     }
 }
