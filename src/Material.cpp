@@ -1,4 +1,6 @@
 #include <Material.h>
+#include <Texture.h>
+
 #include <iostream>
 
 Material::Material(ShaderProgram* shader) 

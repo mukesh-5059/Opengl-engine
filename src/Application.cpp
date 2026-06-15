@@ -1,4 +1,5 @@
 #include <Application.h>
+#include <ResourceManager.h>
 #include <iostream>
 
 #include <imgui/imgui.h>
@@ -12,8 +13,10 @@ Application::Application(const std::string& title, int width, int height)
 
 Application::~Application() {
     std::cout << "[Application] Shutting down and cleaning up resources..." << std::endl;
-    shutdownImGui();
     delete m_activeScene;
+    m_activeScene = nullptr;
+    ResourceManager::cleanUp();
+    shutdownImGui();
     if (m_window) {
         std::cout << "[Application] Destroying window" << std::endl;
         glfwDestroyWindow(m_window);
@@ -57,6 +60,7 @@ bool Application::init() {
     glViewport(0, 0, m_width, m_height);
 
     initImGui();
+    ResourceManager::init();
 
     m_activeScene = new Scene();
     
@@ -113,6 +117,7 @@ void Application::processInput() {
 }
 
 void Application::update(float deltaTime) {
+    ResourceManager::prune();
     if (m_activeScene) {
         m_activeScene->update(deltaTime, m_window);
     }
@@ -163,6 +168,9 @@ void Application::onGui() {
     ImGui::End();
 
     ImGui::Begin("Debug");
+    if (ImGui::CollapsingHeader("Resource Manager")) {
+        ResourceManager::onGui();
+    }
     if (m_activeScene && ImGui::CollapsingHeader("Scene")) {
         m_activeScene->onGui();
     }

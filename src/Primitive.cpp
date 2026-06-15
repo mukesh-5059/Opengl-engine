@@ -1,4 +1,5 @@
 #include <Primitive.h>
+#include <Mesh.h>
 
 #include <vector>
 #include <cmath>

@@ -1,10 +1,12 @@
 #pragma once
 
-#include <ShaderProgram.h>
-#include <Texture.h>
+#include "ShaderProgram.h"
 #include <glm/glm.hpp>
 #include <string>
 #include <unordered_map>
+
+class ShaderProgram;
+class Texture;
 
 class Material {
     public:
