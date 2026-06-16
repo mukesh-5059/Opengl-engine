@@ -1,10 +1,10 @@
 #include <Material.h>
 #include <Texture.h>
-
+#include <ShaderProgram.h>
 #include <iostream>
 
-Material::Material(ShaderProgram* shader) 
-    : m_shader(shader){
+Material::Material(std::shared_ptr<ShaderProgram> shader) 
+    : m_shader(shader) {
     std::cout << "[Material] Created dynamic material" << std::endl;
 }
 
@@ -66,7 +66,7 @@ void Material::setMat4(const std::string& name, const glm::mat4& value) {
     m_mat4s[name] = value;
 }
 
-void Material::setTexture(const std::string& name, Texture* texture, int slot) {
+void Material::setTexture(const std::string& name, std::shared_ptr<Texture> texture, int slot) {
     m_textures[name] = TextureUnit{ texture, slot };
 }
 
@@ -106,7 +106,7 @@ bool Material::getVec4(const std::string& name, glm::vec4& outValue) const {
     return false;
 }
 
-bool Material::getTexture(const std::string& name, Texture*& outTexture, int& outSlot) const {
+bool Material::getTexture(const std::string& name, std::shared_ptr<Texture>& outTexture, int& outSlot) const {
     auto it = m_textures.find(name);
     if (it != m_textures.end()) {
         outTexture = it->second.texture;

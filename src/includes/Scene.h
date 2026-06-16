@@ -1,23 +1,14 @@
 #pragma once
 
-#include <GLFW/glfw3.h>
-#include <vector>
 #include <memory>
+#include <Camera.h>
 
-class ShaderProgram;
-class Material;
-class Texture;
-class Mesh;
-class Camera;
+class Model;
 
 class Scene {
     private:
-        std::shared_ptr<ShaderProgram> m_testShader;
-        Material* m_testMaterial;
-        std::shared_ptr<Mesh> m_testMesh;
+        std::shared_ptr<Model> m_testModel;
         Camera* m_camera;
-        std::shared_ptr<Texture> m_testTexture;
-        std::shared_ptr<Texture> m_testTexture1;
 
     public:
         Scene();

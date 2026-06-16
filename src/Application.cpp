@@ -52,6 +52,8 @@ bool Application::init() {
         return false;
     }
 
+    glEnable(GL_DEPTH_TEST);
+
     std::cout << "OpenGL Info:" << std::endl;
     std::cout << "  Vendor:   " << glGetString(GL_VENDOR) << std::endl;
     std::cout << "  Renderer: " << glGetString(GL_RENDERER) << std::endl;

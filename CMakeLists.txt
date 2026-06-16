@@ -20,5 +20,6 @@ target_link_libraries(GameEngine PRIVATE
     "${CMAKE_CURRENT_SOURCE_DIR}/dependencies/lib/libglfw3.a"
     "${CMAKE_CURRENT_SOURCE_DIR}/dependencies/lib/libassimp.a"
     OpenGL::GL
+    z
 )
  

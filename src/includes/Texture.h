@@ -11,6 +11,7 @@ private:
 
 public:
     Texture(const std::string& path);
+    Texture(const void* buffer, int bufferSize, const std::string& nameKey);
     ~Texture();
 
     void bind(unsigned int slot = 0) const;
