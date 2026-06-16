@@ -15,8 +15,8 @@ This document acts as a development checklist and notes log.
   * **Notes**: Baked local transforms into vertices
 - [ ] 6. Uniforms Optimization
   * **Notes**: 
-- [ ] 7. Entity Class
-  * **Notes**: 
+- [x] 7. Entity Class
+  * **Notes**: Uses mesh instead of models.
 - [ ] 8. Uniform Buffer Object (UBO)
   * **Notes**: 
 - [ ] 9. Renderer Class

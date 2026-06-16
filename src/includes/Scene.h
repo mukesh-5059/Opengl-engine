@@ -1,13 +1,14 @@
 #pragma once
 
 #include <memory>
+#include <vector>
 #include <Camera.h>
 
-class Model;
+class Entity;
 
 class Scene {
     private:
-        std::shared_ptr<Model> m_testModel;
+        std::vector<std::shared_ptr<Entity>> m_entities;
         Camera* m_camera;
 
     public:

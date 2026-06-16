@@ -1,19 +1,29 @@
 #include <Scene.h>
 #include <ResourceManager.h>
-#include <Model.h>
+#include <Entity.h>
 #include <Material.h>
 #include <iostream>
 #include <imgui/imgui.h>
+#include <memory>
 
 Scene::Scene() {
     std::cout << "[Scene] Initializing test scene..." << std::endl;
     
-    auto defaultShader = ResourceManager::loadShader("default", "res/shaders/default.vert", "res/shaders/default.frag");
-    auto mat = std::make_shared<Material>(defaultShader);
+    auto defaultShader = ResourceManager::loadShader("lit", "res/shaders/lit.vert", "res/shaders/lit.frag");
+    auto cubeMat = std::make_shared<Material>(defaultShader);
+    auto diffuse = ResourceManager::loadTexture("ContainerDiffuse", "res/textures/container_diffuse.png");
+    auto specular = ResourceManager::loadTexture("ContainerSpecular", "res/textures/container_specular.png");
+    auto cubeMesh = ResourceManager::loadMesh("CubeMesh", "baseCube");
+
+    cubeMat->setTexture("u_DiffuseMap", diffuse, 0);
+    cubeMat->setTexture("u_SpecularMap", specular, 1);
     
-    auto testMesh = ResourceManager::loadMesh("LanternSphere", "baseSphere");
-    std::vector<ModelMesh> modelMeshes = { { testMesh, mat } };
-    m_testModel = std::make_shared<Model>(modelMeshes);
+    int n = 10;
+    for(int i = 0; i<n; ++i) for(int j = 0; j<n; ++j) for(int k = 0; k<n; k++){
+        auto cubeEntity = std::make_shared<Entity>(cubeMesh, cubeMat);
+        cubeEntity->setPosition(glm::vec3(2*i, 2*j, 2*k));
+        m_entities.push_back(cubeEntity);
+    }
     
     m_camera = new Camera(glm::vec3(0.0f, 0.0f, 3.0f));
 }
@@ -27,20 +37,39 @@ void Scene::update(float deltaTime, GLFWwindow* window) {
     if (m_camera) {
         m_camera->captureInput(window, deltaTime);
     }
+
+    //float time = (float)glfwGetTime();
+    //if (m_entities.size() >= 2) {
+    //    m_entities[0]->setRotation(glm::vec3(0.0f, time * 20.0f, 0.0f));
+    //    m_entities[1]->setRotation(glm::vec3(time * 30.0f, time * 30.0f, 0.0f));
+    //}
 }
 
 void Scene::render(int width, int height) {
-    if (m_testModel && m_camera) {
-        glm::mat4 model = glm::mat4(1.0f);
+    if (m_camera) {
         glm::mat4 view = m_camera->getViewMatrix();
         glm::mat4 projection = m_camera->getProjectionMatrix(width, height);
 
-        m_testModel->draw(model, view, projection);
+        for (const auto& entity : m_entities)
+            if (entity) entity->draw(view, projection);
     }
 }
 
 void Scene::onGui() {
     if (m_camera) {
         m_camera->onGui();
+    }
+
+    for (size_t i = 0; i < m_entities.size(); ++i) {
+        std::string label = "Entity " + std::to_string(i);
+        if (ImGui::CollapsingHeader(label.c_str())) {
+            glm::vec3 pos = m_entities[i]->getPosition();
+            if (ImGui::DragFloat3("Position", (float*)&pos, 0.05f))
+                m_entities[i]->setPosition(pos);
+
+            glm::vec3 scale = m_entities[i]->getScale();
+            if (ImGui::DragFloat3("Scale", (float*)&scale, 0.05f))
+                m_entities[i]->setScale(scale);
+        }
     }
 }
