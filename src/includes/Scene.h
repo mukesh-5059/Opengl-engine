@@ -5,6 +5,7 @@
 #include <Camera.h>
 
 class Entity;
+class Renderer;
 
 class Scene {
     private:
@@ -16,6 +17,6 @@ class Scene {
         ~Scene();
 
         void update(float deltaTime, GLFWwindow* window);
-        void render(int width, int height);
+        void render(Renderer* renderer, int width, int height);
         void onGui();
 };

@@ -18,7 +18,8 @@ class Entity {
         Entity(std::shared_ptr<Mesh> mesh, std::shared_ptr<Material> material);
         ~Entity() = default;
     
-        void draw(const glm::mat4& view, const glm::mat4& projection) const;
+        std::shared_ptr<Mesh> getMesh() const { return m_mesh; }
+        std::shared_ptr<Material> getMaterial() const { return m_material; }
     
         void setPosition(const glm::vec3& pos) { m_position = pos; }
         glm::vec3 getPosition() const { return m_position; }

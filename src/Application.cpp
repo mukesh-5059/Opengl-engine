@@ -1,5 +1,6 @@
 #include <Application.h>
 #include <ResourceManager.h>
+#include <Renderer.h>
 #include <iostream>
 
 #include <imgui/imgui.h>
@@ -64,6 +65,7 @@ bool Application::init() {
     initImGui();
     ResourceManager::init();
 
+    m_renderer = std::make_unique<Renderer>();
     m_activeScene = new Scene();
     
     return true;
@@ -130,7 +132,7 @@ void Application::render() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     
     if (m_activeScene) {
-        m_activeScene->render(m_width, m_height);
+        m_activeScene->render(m_renderer.get(), m_width, m_height);
     }
 
     onGui();

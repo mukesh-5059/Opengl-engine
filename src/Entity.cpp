@@ -18,17 +18,4 @@ glm::mat4 Entity::getTransformMatrix() const {
     return model;
 }
 
-void Entity::draw(const glm::mat4& view, const glm::mat4& projection) const {
-    if (m_mesh && m_material) {
-        glm::mat4 modelMatrix = getTransformMatrix();
-        glm::vec3 viewPos = glm::vec3(glm::inverse(view)[3]);
 
-        m_material->setMat4("model", modelMatrix);
-        m_material->setMat4("view", view);
-        m_material->setMat4("projection", projection);
-        m_material->setVec3("u_ViewPos", viewPos);
-        m_material->apply();
-
-        m_mesh->draw();
-    }
-}

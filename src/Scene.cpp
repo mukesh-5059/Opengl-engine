@@ -2,6 +2,8 @@
 #include <ResourceManager.h>
 #include <Entity.h>
 #include <Material.h>
+#include <Renderer.h>
+
 #include <iostream>
 #include <imgui/imgui.h>
 #include <memory>
@@ -45,13 +47,17 @@ void Scene::update(float deltaTime, GLFWwindow* window) {
     //}
 }
 
-void Scene::render(int width, int height) {
-    if (m_camera) {
-        glm::mat4 view = m_camera->getViewMatrix();
-        glm::mat4 projection = m_camera->getProjectionMatrix(width, height);
-
-        for (const auto& entity : m_entities)
-            if (entity) entity->draw(view, projection);
+void Scene::render(Renderer* renderer, int width, int height) {
+    if (m_camera && renderer) {
+        renderer->beginScene(m_camera, width, height);
+        
+        for (const auto& entity : m_entities) {
+            if (entity) {
+                renderer->submit(entity);
+            }
+        }
+        
+        renderer->endScene();
     }
 }
 

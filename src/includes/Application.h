@@ -6,9 +6,12 @@
 #include <Scene.h>
 
 
+class Renderer;
+
 class Application {
     private:
         Scene* m_activeScene;
+        std::unique_ptr<Renderer> m_renderer;
 
         GLFWwindow* m_window;
         std::string m_title;
