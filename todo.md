@@ -11,7 +11,7 @@ This document acts as a development checklist and notes log.
   * **Notes**: 
 - [ ] 4. Better Logging
   * **Notes**: 
-- [x] 5. Model Loading
+- [ ] 5. Model Loading
   * **Notes**: Baked local transforms into vertices
 - [ ] 6. Uniforms Optimization
   * **Notes**: 
