@@ -27,7 +27,7 @@ Scene::Scene() {
         m_entities.push_back(cubeEntity);
     }
     
-    m_camera = new Camera(glm::vec3(0.0f, 0.0f, 3.0f));
+    m_camera = new Camera(glm::vec3(-29.837f, 15.676f, 18.146f));
 }
 
 Scene::~Scene() {

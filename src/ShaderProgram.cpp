@@ -2,6 +2,7 @@
 #include <fstream>
 #include <sstream>
 #include <iostream>
+#include <vector>
 #include <glm/gtc/type_ptr.hpp>
 
 ShaderProgram::ShaderProgram(const char* vertexPath, const char* fragmentPath) {
@@ -56,6 +57,8 @@ ShaderProgram::ShaderProgram(const char* vertexPath, const char* fragmentPath) {
 
     glDeleteShader(vertex);
     glDeleteShader(fragment);
+
+    cacheActiveUniforms();
 }
 
 ShaderProgram::~ShaderProgram() {
@@ -67,28 +70,64 @@ void ShaderProgram::use() {
     glUseProgram(m_id);
 }
 
-void ShaderProgram::setBool(const std::string& name, bool value) const {
-    glUniform1i(glGetUniformLocation(m_id, name.c_str()), (int)value);
+void ShaderProgram::cacheActiveUniforms() {
+    int numActiveUniforms = 0;
+    glGetProgramiv(m_id, GL_ACTIVE_UNIFORMS, &numActiveUniforms);
+
+    int maxNameLength = 0;
+    glGetProgramiv(m_id, GL_ACTIVE_UNIFORM_MAX_LENGTH, &maxNameLength);
+
+    if (numActiveUniforms > 0 && maxNameLength > 0) {
+        std::vector<char> nameBuffer(maxNameLength);
+        for (int i = 0; i < numActiveUniforms; ++i) {
+            int length = 0;
+            int size = 0;
+            unsigned int type = 0;
+            glGetActiveUniform(m_id, i, maxNameLength, &length, &size, &type, nameBuffer.data());
+            std::string name(nameBuffer.data(), length);
+
+            int location = glGetUniformLocation(m_id, name.c_str());
+            if (location == -1) continue;
+
+            switch (type) {
+                case GL_FLOAT:          m_floatUniforms[name] = location; break;
+                case GL_INT:    
+                case GL_BOOL:           m_intUniforms[name] = location; break;
+                case GL_FLOAT_VEC3:     m_vec3Uniforms[name] = location; break;
+                case GL_FLOAT_VEC4:     m_vec4Uniforms[name] = location; break;
+                case GL_FLOAT_MAT4:     m_mat4Uniforms[name] = location; break;
+                case GL_SAMPLER_2D:     m_samplerUniforms[name] = location; break;
+                default:                break; // Unsupported type
+                    
+            }
+        }
+    }
 }
 
-void ShaderProgram::setInt(const std::string& name, int value) const {
-    glUniform1i(glGetUniformLocation(m_id, name.c_str()), value);
+
+
+void ShaderProgram::setBool(int location, bool value) const {
+    glUniform1i(location, (int)value);
 }
 
-void ShaderProgram::setFloat(const std::string& name, float value) const {
-    glUniform1f(glGetUniformLocation(m_id, name.c_str()), value);
+void ShaderProgram::setInt(int location, int value) const {
+    glUniform1i(location, value);
 }
 
-void ShaderProgram::setVec3(const std::string& name, const glm::vec3& value) const {
-    glUniform3fv(glGetUniformLocation(m_id, name.c_str()), 1, glm::value_ptr(value));
+void ShaderProgram::setFloat(int location, float value) const {
+    glUniform1f(location, value);
 }
 
-void ShaderProgram::setVec4(const std::string& name, const glm::vec4& value) const {
-    glUniform4fv(glGetUniformLocation(m_id, name.c_str()), 1, glm::value_ptr(value));
+void ShaderProgram::setVec3(int location, const glm::vec3& value) const {
+    glUniform3fv(location, 1, glm::value_ptr(value));
 }
 
-void ShaderProgram::setMat4(const std::string& name, const glm::mat4& mat) const {
-    glUniformMatrix4fv(glGetUniformLocation(m_id, name.c_str()), 1, GL_FALSE, glm::value_ptr(mat));
+void ShaderProgram::setVec4(int location, const glm::vec4& value) const {
+    glUniform4fv(location, 1, glm::value_ptr(value));
+}
+
+void ShaderProgram::setMat4(int location, const glm::mat4& mat) const {
+    glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(mat));
 }
 
 void ShaderProgram::checkCompileErrors(unsigned int shader, std::string type) {

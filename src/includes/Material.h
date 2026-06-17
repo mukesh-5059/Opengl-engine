@@ -10,19 +10,26 @@ class Texture;
 
 class Material {
     public:
+        template<typename T>
+        struct Uniform {
+            T value;
+            int location;
+        };
+
         struct TextureUnit {
             std::shared_ptr<Texture> texture;
             int slot;
+            int location;
         };
 
     private:
         std::shared_ptr<ShaderProgram> m_shader;
 
-        std::unordered_map<std::string, float> m_floats;
-        std::unordered_map<std::string, int> m_ints;
-        std::unordered_map<std::string, glm::vec3> m_vec3s;
-        std::unordered_map<std::string, glm::vec4> m_vec4s;
-        std::unordered_map<std::string, glm::mat4> m_mat4s;
+        std::unordered_map<std::string, Uniform<float>> m_floats;
+        std::unordered_map<std::string, Uniform<int>> m_ints;
+        std::unordered_map<std::string, Uniform<glm::vec3>> m_vec3s;
+        std::unordered_map<std::string, Uniform<glm::vec4>> m_vec4s;
+        std::unordered_map<std::string, Uniform<glm::mat4>> m_mat4s;
         std::unordered_map<std::string, TextureUnit> m_textures;
 
     public:
