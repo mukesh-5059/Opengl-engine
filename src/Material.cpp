@@ -1,6 +1,7 @@
 #include <Material.h>
 #include <Texture.h>
 #include <ShaderProgram.h>
+#include <ResourceManager.h>
 #include <iostream>
 
 Material::Material(std::shared_ptr<ShaderProgram> shader) 
@@ -22,7 +23,7 @@ Material::Material(std::shared_ptr<ShaderProgram> shader)
             m_mat4s[name] = Uniform<glm::mat4>{ glm::mat4(1.0f), loc };
 
         for (const auto& [name, loc] : m_shader->getSamplerUniforms())
-            m_textures[name] = TextureUnit{ nullptr, 0, loc };
+            m_textures[name] = TextureUnit{ m_shader == ResourceManager::getErrorShader() ? ResourceManager::getErrorTexture() : ResourceManager::getDefaultTexture(), 0, loc };
 
     }
     std::cout << "[Material] Created dynamic material" << std::endl;

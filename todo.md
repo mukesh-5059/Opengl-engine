@@ -17,7 +17,7 @@ This document acts as a development checklist and notes log.
   * **Notes**: 
 - [x] 7. Entity Class
   * **Notes**: Uses mesh instead of models.
-- [ ] 8. Uniform Buffer Object (UBO)
+- [x] 8. Uniform Buffer Object (UBO)
   * **Notes**: 
 - [x] 9. Renderer Class
   * **Notes**: needs optimizations
@@ -25,11 +25,11 @@ This document acts as a development checklist and notes log.
   * **Notes**: 
 - [x] 11. Default Shaders
   * **Notes**: 
-- [ ] 12. Default Textures
-  * **Notes**: 
+- [x] 12. Default Textures
+  * **Notes**: If one texture is default(specular) and other is error(diffuse) the outcome is default
 - [ ] 13. State Baching
   * **Notes**:
 - [ ] 14. Replace string keys in unordered maps
   * **Notes** :
 
-FPS now: 115~, 1000 cubes (improved by 5)
+FPS now: 135~, 1000 cubes

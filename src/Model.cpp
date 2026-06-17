@@ -6,16 +6,10 @@
 Model::Model(const std::vector<ModelMesh>& meshes) : m_meshes(meshes) {}
 
 void Model::draw(const glm::mat4& model, const glm::mat4& view, const glm::mat4& projection) const {
-    // Extract camera position in world space from the view matrix
-    glm::vec3 viewPos = glm::vec3(glm::inverse(view)[3]);
-
     for (const auto& entry : m_meshes) {
         if (entry.mesh) {
             if (entry.material) {
                 entry.material->setMat4("model", model);
-                entry.material->setMat4("view", view);
-                entry.material->setMat4("projection", projection);
-                entry.material->setVec3("u_ViewPos", viewPos);
                 entry.material->apply();
             }
             entry.mesh->draw();

@@ -17,6 +17,7 @@ struct RenderCommand {
 class Renderer {
 private:
     std::vector<RenderCommand> m_drawQueue;
+    unsigned int m_uboCamera;
     
     glm::mat4 m_viewMatrix;
     glm::mat4 m_projectionMatrix;
@@ -24,7 +25,7 @@ private:
 
 public:
     Renderer();
-    ~Renderer() = default;
+    ~Renderer();
 
     void beginScene(Camera* camera, int width, int height);
     void submit(std::shared_ptr<Mesh> mesh, std::shared_ptr<Material> material, const glm::mat4& transform);

@@ -8,7 +8,11 @@ in vec2 TexCoords;
 uniform sampler2D u_DiffuseMap;
 uniform sampler2D u_SpecularMap;
 
-uniform vec3 u_ViewPos;
+layout (std140, binding = 0) uniform CameraData {
+    mat4 projection;
+    mat4 view;
+    vec3 u_ViewPos;
+};
 
 // Directional Light properties
 struct DirLight {

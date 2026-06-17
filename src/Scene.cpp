@@ -11,12 +11,11 @@
 Scene::Scene() {
     std::cout << "[Scene] Initializing test scene..." << std::endl;
     
-    auto defaultShader = ResourceManager::loadShader("lit", "res/shaders/lit.vert", "res/shaders/lit.frag");
-    auto cubeMat = std::make_shared<Material>(defaultShader);
-    auto diffuse = ResourceManager::loadTexture("ContainerDiffuse", "res/textures/container_diffuse.png");
-    auto specular = ResourceManager::loadTexture("ContainerSpecular", "res/textures/container_specular.png");
-    auto cubeMesh = ResourceManager::loadMesh("CubeMesh", "baseCube");
-
+    auto baseShader = ResourceManager::loadShader("baseShader", "res/shaders/lit.vert", "res/shaders/lit.frag");
+    auto cubeMesh = ResourceManager::loadMesh("cube", "baseCube");
+    auto cubeMat = std::make_shared<Material>(baseShader);
+    auto diffuse = ResourceManager::loadTexture("containerDiffuse", "res/textures/container_difuse.png");
+    auto specular = ResourceManager::loadTexture("containerSpecular", "res/textures/container_specular.png");
     cubeMat->setTexture("u_DiffuseMap", diffuse, 0);
     cubeMat->setTexture("u_SpecularMap", specular, 1);
     
@@ -66,16 +65,16 @@ void Scene::onGui() {
         m_camera->onGui();
     }
 
-    for (size_t i = 0; i < m_entities.size(); ++i) {
-        std::string label = "Entity " + std::to_string(i);
-        if (ImGui::CollapsingHeader(label.c_str())) {
-            glm::vec3 pos = m_entities[i]->getPosition();
-            if (ImGui::DragFloat3("Position", (float*)&pos, 0.05f))
-                m_entities[i]->setPosition(pos);
-
-            glm::vec3 scale = m_entities[i]->getScale();
-            if (ImGui::DragFloat3("Scale", (float*)&scale, 0.05f))
-                m_entities[i]->setScale(scale);
-        }
-    }
+    //for (size_t i = 0; i < m_entities.size(); ++i) {
+    //    std::string label = "Entity " + std::to_string(i);
+    //    if (ImGui::CollapsingHeader(label.c_str())) {
+    //        glm::vec3 pos = m_entities[i]->getPosition();
+    //        if (ImGui::DragFloat3("Position", (float*)&pos, 0.05f))
+    //            m_entities[i]->setPosition(pos);
+//
+    //        glm::vec3 scale = m_entities[i]->getScale();
+    //        if (ImGui::DragFloat3("Scale", (float*)&scale, 0.05f))
+    //            m_entities[i]->setScale(scale);
+    //    }
+    //}
 }
