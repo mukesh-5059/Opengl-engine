@@ -6,6 +6,7 @@
 #include <glm/gtc/type_ptr.hpp>
 
 ShaderProgram::ShaderProgram(const char* vertexPath, const char* fragmentPath) {
+    m_isValid = true;
     std::cout << "[ShaderProgram] Creating from: " << vertexPath << " and " << fragmentPath << std::endl;
     std::string vertexCode;
     std::string fragmentCode;
@@ -136,6 +137,7 @@ void ShaderProgram::checkCompileErrors(unsigned int shader, std::string type) {
     if (type != "PROGRAM") {
         glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
         if (!success) {
+            m_isValid = false;
             glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &logLength);
             if (logLength > 0) {
                 char* infoLog = (char*)malloc(logLength);
@@ -148,6 +150,7 @@ void ShaderProgram::checkCompileErrors(unsigned int shader, std::string type) {
     else {
         glGetProgramiv(shader, GL_LINK_STATUS, &success);
         if (!success) {
+            m_isValid = false;
             glGetProgramiv(shader, GL_INFO_LOG_LENGTH, &logLength);
             if (logLength > 0) {
                 char* infoLog = (char*)malloc(logLength);

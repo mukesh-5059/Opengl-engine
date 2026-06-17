@@ -2,10 +2,9 @@
 #include <stb/StbImage.h>
 #include <iostream>
 
-Texture::Texture(const std::string& path) : m_id(0), m_path(path), m_width(0), m_height(0), m_nrChannels(0) {
+Texture::Texture(const std::string& path) : m_id(0), m_path(path), m_width(0), m_height(0), m_nrChannels(0), m_isValid(false) {
     glGenTextures(1, &m_id);
     
-    // Flip textures vertically on load so they match OpenGL's coordinate system
     stbi_set_flip_vertically_on_load(true);
     
     unsigned char* data = stbi_load(path.c_str(), &m_width, &m_height, &m_nrChannels, 0);
@@ -30,13 +29,14 @@ Texture::Texture(const std::string& path) : m_id(0), m_path(path), m_width(0), m
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
         stbi_image_free(data);
+        m_isValid = true;
         std::cout << "[Texture] Loaded: " << path << " (" << m_width << "x" << m_height << ", " << m_nrChannels << " channels)" << std::endl;
     } else {
         std::cerr << "[Texture] Failed to load texture at path: " << path << std::endl;
     }
 }
 
-Texture::Texture(const void* buffer, int bufferSize, const std::string& nameKey) : m_id(0), m_path(nameKey), m_width(0), m_height(0), m_nrChannels(0) {
+Texture::Texture(const void* buffer, int bufferSize, const std::string& nameKey) : m_id(0), m_path(nameKey), m_width(0), m_height(0), m_nrChannels(0), m_isValid(false) {
     glGenTextures(1, &m_id);
     
     stbi_set_flip_vertically_on_load(true);
@@ -62,10 +62,33 @@ Texture::Texture(const void* buffer, int bufferSize, const std::string& nameKey)
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
         stbi_image_free(data);
+        m_isValid = true;
         std::cout << "[Texture] Loaded embedded texture: " << nameKey << " (" << m_width << "x" << m_height << ", " << m_nrChannels << " channels)" << std::endl;
     } else {
         std::cerr << "[Texture] Failed to load embedded texture: " << nameKey << std::endl;
     }
+}
+
+Texture::Texture(const unsigned char* pixels, int width, int height, int channels)
+    : m_id(0), m_path("Procedural"), m_width(width), m_height(height), m_nrChannels(channels), m_isValid(true) {
+    glGenTextures(1, &m_id);
+    glBindTexture(GL_TEXTURE_2D, m_id);
+    
+    GLenum format = GL_RGB;
+    if (m_nrChannels == 1)
+        format = GL_RED;
+    else if (m_nrChannels == 3)
+        format = GL_RGB;
+    else if (m_nrChannels == 4)
+        format = GL_RGBA;
+
+    glTexImage2D(GL_TEXTURE_2D, 0, format, m_width, m_height, 0, format, GL_UNSIGNED_BYTE, pixels);
+    glGenerateMipmap(GL_TEXTURE_2D);
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 }
 
 Texture::~Texture() {

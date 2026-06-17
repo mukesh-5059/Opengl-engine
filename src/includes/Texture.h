@@ -8,10 +8,12 @@ class Texture {
         unsigned int m_id;
         std::string m_path;
         int m_width, m_height, m_nrChannels;
+        bool m_isValid;
     
     public:
         Texture(const std::string& path);
         Texture(const void* buffer, int bufferSize, const std::string& nameKey);
+        Texture(const unsigned char* pixels, int width, int height, int channels);
         ~Texture();
     
         void bind(unsigned int slot = 0) const;
@@ -21,4 +23,5 @@ class Texture {
         int getWidth() const { return m_width; }
         int getHeight() const { return m_height; }
         std::string getPath() const { return m_path; }
+        bool isValid() const { return m_isValid; }
 };

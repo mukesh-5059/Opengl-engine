@@ -8,6 +8,7 @@
 class ShaderProgram {
     private:
         unsigned int m_id;
+        bool m_isValid;
         void checkCompileErrors(unsigned int shader, std::string type);
 
         std::unordered_map<std::string, int> m_floatUniforms;
@@ -33,6 +34,7 @@ class ShaderProgram {
         void setMat4(int location, const glm::mat4& mat) const;
 
         unsigned int getID() const { return m_id; }
+        bool isValid() const { return m_isValid; }
 
         const std::unordered_map<std::string, int>& getFloatUniforms() const { return m_floatUniforms; }
         const std::unordered_map<std::string, int>& getIntUniforms() const { return m_intUniforms; }

@@ -27,5 +27,9 @@ This document acts as a development checklist and notes log.
   * **Notes**: 
 - [ ] 12. Default Textures
   * **Notes**: 
+- [ ] 13. State Baching
+  * **Notes**:
+- [ ] 14. Replace string keys in unordered maps
+  * **Notes** :
 
 FPS now: 115~, 1000 cubes (improved by 5)

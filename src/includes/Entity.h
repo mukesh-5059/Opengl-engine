@@ -1,4 +1,5 @@
 #pragma once
+#include "ResourceManager.h"
 #include <memory>
 #include <glm/glm.hpp>
 
@@ -15,7 +16,7 @@ class Entity {
         glm::vec3 m_scale{1.0f};
     
     public:
-        Entity(std::shared_ptr<Mesh> mesh, std::shared_ptr<Material> material);
+        Entity(std::shared_ptr<Mesh> mesh, std::shared_ptr<Material> material = ResourceManager::getDefaultMaterial());
         ~Entity() = default;
     
         std::shared_ptr<Mesh> getMesh() const { return m_mesh; }
