@@ -31,5 +31,6 @@ This document acts as a development checklist and notes log.
   * **Notes**:
 - [ ] 14. Replace string keys in unordered maps
   * **Notes** :
+- [ ] 15. Entity Componenet System
 
 FPS now: 135~, 1000 cubes

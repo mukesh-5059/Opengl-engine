@@ -11,6 +11,7 @@ class Scene {
     private:
         std::vector<std::shared_ptr<Entity>> m_entities;
         Camera* m_camera;
+        int m_selectedEntityIndex = -1;
 
     public:
         Scene();
@@ -18,5 +19,6 @@ class Scene {
 
         void update(float deltaTime, GLFWwindow* window);
         void render(Renderer* renderer, int width, int height);
-        void onGui();
+        void onHierarchyGui();
+        void onInspectorGui();
 };

@@ -60,21 +60,79 @@ void Scene::render(Renderer* renderer, int width, int height) {
     }
 }
 
-void Scene::onGui() {
+void Scene::onHierarchyGui() {
+    ImGui::Text("Entities (%d)", (int)m_entities.size());
+    ImGui::Separator();
+
+    if (ImGui::TreeNodeEx("Root Scene", ImGuiTreeNodeFlags_DefaultOpen)) {
+        for (size_t i = 0; i < m_entities.size(); ++i) {
+            ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_SpanAvailWidth | ImGuiTreeNodeFlags_Leaf;
+            if (m_selectedEntityIndex == (int)i) {
+                flags |= ImGuiTreeNodeFlags_Selected;
+            }
+            std::string label = "Entity " + std::to_string(i);
+            bool opened = ImGui::TreeNodeEx((void*)(intptr_t)i, flags, "%s", label.c_str());
+            if (ImGui::IsItemClicked()) {
+                m_selectedEntityIndex = (int)i;
+            }
+            if (opened) {
+                ImGui::TreePop();
+            }
+        }
+        ImGui::TreePop();
+    }
+}
+
+void Scene::onInspectorGui() {
     if (m_camera) {
         m_camera->onGui();
+        ImGui::Separator();
     }
 
-    //for (size_t i = 0; i < m_entities.size(); ++i) {
-    //    std::string label = "Entity " + std::to_string(i);
-    //    if (ImGui::CollapsingHeader(label.c_str())) {
-    //        glm::vec3 pos = m_entities[i]->getPosition();
-    //        if (ImGui::DragFloat3("Position", (float*)&pos, 0.05f))
-    //            m_entities[i]->setPosition(pos);
-//
-    //        glm::vec3 scale = m_entities[i]->getScale();
-    //        if (ImGui::DragFloat3("Scale", (float*)&scale, 0.05f))
-    //            m_entities[i]->setScale(scale);
-    //    }
-    //}
+    if (m_selectedEntityIndex >= 0 && m_selectedEntityIndex < (int)m_entities.size()) {
+        auto& entity = m_entities[m_selectedEntityIndex];
+        ImGui::Text("Selected Entity: ID %d", m_selectedEntityIndex);
+        ImGui::Separator();
+
+        // Transform component
+        if (ImGui::CollapsingHeader("Transform", ImGuiTreeNodeFlags_DefaultOpen)) {
+            glm::vec3 pos = entity->getPosition();
+            if (ImGui::DragFloat3("Position", &pos.x, 0.1f)) {
+                entity->setPosition(pos);
+            }
+
+            glm::vec3 rot = entity->getRotation();
+            if (ImGui::DragFloat3("Rotation", &rot.x, 1.0f)) {
+                entity->setRotation(rot);
+            }
+
+            glm::vec3 scale = entity->getScale();
+            if (ImGui::DragFloat3("Scale", &scale.x, 0.1f)) {
+                entity->setScale(scale);
+            }
+        }
+
+        // Mesh/Material Info
+        if (ImGui::CollapsingHeader("Mesh & Material", ImGuiTreeNodeFlags_DefaultOpen)) {
+            auto mesh = entity->getMesh();
+            if (mesh) {
+                ImGui::Text("Mesh: Loaded");
+            } else {
+                ImGui::Text("Mesh: None");
+            }
+
+            auto material = entity->getMaterial();
+            if (material) {
+                ImGui::Text("Material: Loaded");
+                auto shader = material->getShader();
+                if (shader) {
+                    ImGui::Text("Shader: Loaded");
+                }
+            } else {
+                ImGui::Text("Material: None");
+            }
+        }
+    } else {
+        ImGui::Text("Select an entity to view details.");
+    }
 }

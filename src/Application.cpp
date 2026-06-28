@@ -171,12 +171,31 @@ void Application::onGui() {
 
     ImGui::End();
 
-    ImGui::Begin("Debug");
-    if (ImGui::CollapsingHeader("Resource Manager")) {
-        ResourceManager::onGui();
+    float sidebarWidth = 300.0f;
+    ImVec2 displaySize = ImGui::GetIO().DisplaySize;
+
+    // Entity Inspector (Left panel)
+    ImGui::SetNextWindowPos(ImVec2(0.0f, 0.0f), ImGuiCond_Always);
+    ImGui::SetNextWindowSize(ImVec2(sidebarWidth, displaySize.y), ImGuiCond_Always);
+    if (ImGui::Begin("Entity Inspector", nullptr, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse)) {
+        if (m_activeScene) {
+            m_activeScene->onInspectorGui();
+        }
     }
-    if (m_activeScene && ImGui::CollapsingHeader("Scene")) {
-        m_activeScene->onGui();
+    ImGui::End();
+
+    // Scene Hierarchy (Right panel)
+    ImGui::SetNextWindowPos(ImVec2(displaySize.x - sidebarWidth, 0.0f), ImGuiCond_Always);
+    ImGui::SetNextWindowSize(ImVec2(sidebarWidth, displaySize.y), ImGuiCond_Always);
+    if (ImGui::Begin("Scene Hierarchy", nullptr, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse)) {
+        if (ImGui::CollapsingHeader("Resource Manager", ImGuiTreeNodeFlags_DefaultOpen)) {
+            ResourceManager::onGui();
+        }
+        ImGui::Separator();
+
+        if (m_activeScene) {
+            m_activeScene->onHierarchyGui();
+        }
     }
     ImGui::End();
 }
