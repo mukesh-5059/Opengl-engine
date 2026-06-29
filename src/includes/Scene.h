@@ -1,8 +1,9 @@
 #pragma once
-
+#include <Camera.h>
+#include <EntityManager.hpp>
+#include <TransformManager.hpp>
 #include <memory>
 #include <vector>
-#include <Camera.h>
 
 class Entity;
 class Renderer;
@@ -11,7 +12,12 @@ class Scene {
     private:
         std::vector<std::shared_ptr<Entity>> m_entities;
         Camera* m_camera;
-        int m_selectedEntityIndex = -1;
+
+        EntityManager m_entityManager;
+        TransformManager m_transformManager;
+        Id::EntityId m_selectedEntityId = Id::invalidId;
+
+        void drawHierarchyNode(Id::EntityId entityId);
 
     public:
         Scene();
@@ -21,4 +27,10 @@ class Scene {
         void render(Renderer* renderer, int width, int height);
         void onHierarchyGui();
         void onInspectorGui();
+
+        EntityManager& getEntityManager() { return m_entityManager; }
+        const EntityManager& getEntityManager() const { return m_entityManager; }
+
+        TransformManager& getTransformManager() { return m_transformManager; }
+        const TransformManager& getTransformManager() const { return m_transformManager; }
 };

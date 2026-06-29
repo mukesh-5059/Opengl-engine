@@ -7,8 +7,9 @@
 #include <iostream>
 #include <imgui/imgui.h>
 #include <memory>
+#include <string>
 
-Scene::Scene() {
+Scene::Scene() : m_entityManager(this), m_transformManager(this) {
     std::cout << "[Scene] Initializing test scene..." << std::endl;
     
     auto baseShader = ResourceManager::loadShader("baseShader", "res/shaders/lit.vert", "res/shaders/lit.frag");
@@ -60,23 +61,41 @@ void Scene::render(Renderer* renderer, int width, int height) {
     }
 }
 
-void Scene::onHierarchyGui() {
-    ImGui::Text("Entities (%d)", (int)m_entities.size());
-    ImGui::Separator();
+void Scene::drawHierarchyNode(Id::EntityId entityId) {
+    Id::EntityId firstChild = m_transformManager.getFirstChild(entityId);
+    
+    ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_SpanAvailWidth;
+    if (firstChild == Id::invalidId)
+        flags |= ImGuiTreeNodeFlags_Leaf;
+    if (m_selectedEntityId == entityId)
+        flags |= ImGuiTreeNodeFlags_Selected;
 
-    if (ImGui::TreeNodeEx("Root Scene", ImGuiTreeNodeFlags_DefaultOpen)) {
-        for (size_t i = 0; i < m_entities.size(); ++i) {
-            ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_SpanAvailWidth | ImGuiTreeNodeFlags_Leaf;
-            if (m_selectedEntityIndex == (int)i) {
-                flags |= ImGuiTreeNodeFlags_Selected;
-            }
-            std::string label = "Entity " + std::to_string(i);
-            bool opened = ImGui::TreeNodeEx((void*)(intptr_t)i, flags, "%s", label.c_str());
-            if (ImGui::IsItemClicked()) {
-                m_selectedEntityIndex = (int)i;
-            }
-            if (opened) {
-                ImGui::TreePop();
+    std::string label = "Entity " + std::to_string(Id::indexOf(entityId)) + " [Gen " + std::to_string(Id::generationOf(entityId)) + "]";
+    bool opened = ImGui::TreeNodeEx((void*)(intptr_t)entityId, flags, "%s", label.c_str());
+    
+    if (ImGui::IsItemClicked()) m_selectedEntityId = entityId;
+
+    if (opened) {
+        Id::EntityId child = firstChild;
+        while (child != Id::invalidId) {
+            drawHierarchyNode(child);
+            child = m_transformManager.getNextSibling(child);
+        }
+        ImGui::TreePop();
+    }
+}
+
+void Scene::onHierarchyGui() {
+    if (ImGui::TreeNodeEx("New ECS Scene Graph", ImGuiTreeNodeFlags_DefaultOpen)) {
+        Id::ComponentIndex count = m_transformManager.getEntityCount();
+        if (count == 0)
+            ImGui::TextDisabled("No ECS entities active.");
+        else {
+            for (Id::ComponentIndex i = 0; i < count; ++i) {
+                Id::EntityId ent = m_transformManager.getEntity(i);
+                if (m_transformManager.getParent(ent) == Id::invalidId) {
+                    drawHierarchyNode(ent);
+                }
             }
         }
         ImGui::TreePop();
@@ -89,50 +108,47 @@ void Scene::onInspectorGui() {
         ImGui::Separator();
     }
 
-    if (m_selectedEntityIndex >= 0 && m_selectedEntityIndex < (int)m_entities.size()) {
-        auto& entity = m_entities[m_selectedEntityIndex];
-        ImGui::Text("Selected Entity: ID %d", m_selectedEntityIndex);
+    if (m_selectedEntityId != Id::invalidId) {
+        ImGui::Text("Selected ECS Entity: ID %d (Gen %d)", Id::indexOf(m_selectedEntityId), Id::generationOf(m_selectedEntityId));
         ImGui::Separator();
 
-        // Transform component
-        if (ImGui::CollapsingHeader("Transform", ImGuiTreeNodeFlags_DefaultOpen)) {
-            glm::vec3 pos = entity->getPosition();
+        if (ImGui::CollapsingHeader("Transform Component", ImGuiTreeNodeFlags_DefaultOpen)) {
+            glm::vec3 pos = m_transformManager.getPosition(m_selectedEntityId);
             if (ImGui::DragFloat3("Position", &pos.x, 0.1f)) {
-                entity->setPosition(pos);
+                m_transformManager.setPosition(m_selectedEntityId, pos);
             }
 
-            glm::vec3 rot = entity->getRotation();
+            glm::vec3 rot = m_transformManager.getRotation(m_selectedEntityId);
             if (ImGui::DragFloat3("Rotation", &rot.x, 1.0f)) {
-                entity->setRotation(rot);
+                m_transformManager.setRotation(m_selectedEntityId, rot);
             }
 
-            glm::vec3 scale = entity->getScale();
+            glm::vec3 scale = m_transformManager.getScale(m_selectedEntityId);
             if (ImGui::DragFloat3("Scale", &scale.x, 0.1f)) {
-                entity->setScale(scale);
+                m_transformManager.setScale(m_selectedEntityId, scale);
             }
         }
 
-        // Mesh/Material Info
-        if (ImGui::CollapsingHeader("Mesh & Material", ImGuiTreeNodeFlags_DefaultOpen)) {
-            auto mesh = entity->getMesh();
-            if (mesh) {
-                ImGui::Text("Mesh: Loaded");
+        if (ImGui::CollapsingHeader("Scene Hierarchy Relations", ImGuiTreeNodeFlags_DefaultOpen)) {
+            Id::EntityId parent = m_transformManager.getParent(m_selectedEntityId);
+            if (parent == Id::invalidId)
+                ImGui::Text("Parent: None (Root)");
+            else
+                ImGui::Text("Parent: Entity %d", Id::indexOf(parent));
+
+            Id::EntityId firstChild = m_transformManager.getFirstChild(m_selectedEntityId);
+            if (firstChild == Id::invalidId) {
+                ImGui::Text("First Child: None");
             } else {
-                ImGui::Text("Mesh: None");
+                ImGui::Text("First Child: Entity %d", Id::indexOf(firstChild));
             }
 
-            auto material = entity->getMaterial();
-            if (material) {
-                ImGui::Text("Material: Loaded");
-                auto shader = material->getShader();
-                if (shader) {
-                    ImGui::Text("Shader: Loaded");
-                }
+            Id::EntityId nextSibling = m_transformManager.getNextSibling(m_selectedEntityId);
+            if (nextSibling == Id::invalidId) {
+                ImGui::Text("Next Sibling: None");
             } else {
-                ImGui::Text("Material: None");
+                ImGui::Text("Next Sibling: Entity %d", Id::indexOf(nextSibling));
             }
         }
-    } else {
-        ImGui::Text("Select an entity to view details.");
     }
 }

@@ -1,12 +1,15 @@
 #include "Id.hpp"
 #include <EntityManager.hpp>
+#include <Scene.h>
 #include <cassert>
 
-EntityManager::EntityManager() : m_generations(), m_freeIndices() {}
+EntityManager::EntityManager(Scene* scene) : m_scene(scene), m_generations(), m_freeIndices() {
+    assert(scene != nullptr);
+}
 EntityManager::~EntityManager() {};
 
-Id::idType EntityManager::create(){
-    Id::idType index;
+Id::EntityId EntityManager::create(){
+    Id::EntityId index;
     if(m_freeIndices.size() > MIN_FREE_INDICES){
         index = m_freeIndices.front();
         m_freeIndices.pop_front();
@@ -14,12 +17,13 @@ Id::idType EntityManager::create(){
         m_generations.push_back(0);
         index = m_generations.size() - 1;
     }
-    Id::idType id = Id::generateId(m_generations[index], index);
+    Id::EntityId id = Id::generateId(m_generations[index], index);
+    m_scene->getTransformManager().create(id);
     return id;
 }
 
-bool EntityManager::isValid(Id::idType id){
-    Id::idType index = Id::indexOf(id);
+bool EntityManager::isValid(Id::EntityId id){
+    Id::EntityId index = Id::indexOf(id);
 
     if(index >= m_generations.size()) return false;
     if(id == Id::invalidId) return false;
@@ -27,9 +31,10 @@ bool EntityManager::isValid(Id::idType id){
     return m_generations[index] == Id::generationOf(id);
 }
 
-void EntityManager::destroy(Id::idType id){
+void EntityManager::destroy(Id::EntityId id){
     assert(isValid(id));
-    Id::idType index = Id::indexOf(id);
+    m_scene->getTransformManager().destroy(id);
+    Id::EntityId index = Id::indexOf(id);
     ++m_generations[index];
     m_freeIndices.push_back(index);
 }
