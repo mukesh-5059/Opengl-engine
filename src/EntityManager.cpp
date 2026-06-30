@@ -5,10 +5,11 @@
 
 EntityManager::EntityManager(Scene* scene) : m_scene(scene), m_generations(), m_freeIndices() {
     assert(scene != nullptr);
+    m_currentCount = 0;
 }
 EntityManager::~EntityManager() {};
 
-Id::EntityId EntityManager::create(){
+Id::EntityId EntityManager::create(const std::string& name){
     Id::EntityId index;
     if(m_freeIndices.size() > MIN_FREE_INDICES){
         index = m_freeIndices.front();
@@ -19,6 +20,8 @@ Id::EntityId EntityManager::create(){
     }
     Id::EntityId id = Id::generateId(m_generations[index], index);
     m_scene->getTransformManager().create(id);
+    m_scene->getNameManager().create(id, name);
+    ++m_currentCount;
     return id;
 }
 
@@ -34,7 +37,9 @@ bool EntityManager::isValid(Id::EntityId id){
 void EntityManager::destroy(Id::EntityId id){
     assert(isValid(id));
     m_scene->getTransformManager().destroy(id);
+    m_scene->getNameManager().destroy(id);
     Id::EntityId index = Id::indexOf(id);
     ++m_generations[index];
     m_freeIndices.push_back(index);
+    --m_currentCount;
 }

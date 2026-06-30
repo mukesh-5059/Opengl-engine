@@ -93,8 +93,6 @@ void TransformManager::create(Id::EntityId entityId) {
 }
 
 void TransformManager::destroy(Id::EntityId entityId) {
-    assert(hasComponent(entityId));
-
     Id::ComponentIndex compIndex = getComponentIndex(entityId);
 
     // Get grandparent entity ID (could be Id::invalidId, representing the root scene)
@@ -161,7 +159,6 @@ void TransformManager::destroy(Id::EntityId entityId) {
 }
 
 void TransformManager::setParent(Id::EntityId childEntityId, Id::EntityId parentEntityId, bool keepWorld) {
-    assert(hasComponent(childEntityId));
     assert(childEntityId != parentEntityId); // Cannot parent to itself
 
     Id::ComponentIndex cIdx = getComponentIndex(childEntityId);
@@ -192,7 +189,6 @@ void TransformManager::setParent(Id::EntityId childEntityId, Id::EntityId parent
 
     // 2. Link to new parent
     if (parentEntityId != Id::invalidId) {
-        assert(hasComponent(parentEntityId));
         Id::ComponentIndex newPIdx = getComponentIndex(parentEntityId);
         
         m_data.parent[cIdx] = newPIdx;
@@ -233,7 +229,6 @@ void TransformManager::setParent(Id::EntityId childEntityId, Id::EntityId parent
 }
 
 void TransformManager::setPosition(Id::EntityId entityId, const glm::vec3& position) {
-    assert(hasComponent(entityId));
     Id::ComponentIndex index = getComponentIndex(entityId);
     m_data.pos[index] = position;
     rebuildLocalMatrix(index);
@@ -241,12 +236,10 @@ void TransformManager::setPosition(Id::EntityId entityId, const glm::vec3& posit
 }
 
 glm::vec3 TransformManager::getPosition(Id::EntityId entityId) const {
-    assert(hasComponent(entityId));
     return m_data.pos[getComponentIndex(entityId)];
 }
 
 void TransformManager::setRotation(Id::EntityId entityId, const glm::vec3& rotation) {
-    assert(hasComponent(entityId));
     Id::ComponentIndex index = getComponentIndex(entityId);
     m_data.rot[index] = rotation;
     rebuildLocalMatrix(index);
@@ -254,12 +247,10 @@ void TransformManager::setRotation(Id::EntityId entityId, const glm::vec3& rotat
 }
 
 glm::vec3 TransformManager::getRotation(Id::EntityId entityId) const {
-    assert(hasComponent(entityId));
     return m_data.rot[getComponentIndex(entityId)];
 }
 
 void TransformManager::setScale(Id::EntityId entityId, const glm::vec3& scale) {
-    assert(hasComponent(entityId));
     Id::ComponentIndex index = getComponentIndex(entityId);
     m_data.scale[index] = scale;
     rebuildLocalMatrix(index);
@@ -267,34 +258,28 @@ void TransformManager::setScale(Id::EntityId entityId, const glm::vec3& scale) {
 }
 
 glm::vec3 TransformManager::getScale(Id::EntityId entityId) const {
-    assert(hasComponent(entityId));
     return m_data.scale[getComponentIndex(entityId)];
 }
 
 glm::mat4 TransformManager::getModelMatrix(Id::EntityId entityId) const {
-    assert(hasComponent(entityId));
     return m_data.modelMatrices[getComponentIndex(entityId)];
 }
 
 glm::mat4 TransformManager::getLocalMatrix(Id::EntityId entityId) const {
-    assert(hasComponent(entityId));
     return m_data.localMatrices[getComponentIndex(entityId)];
 }
 
 Id::EntityId TransformManager::getParent(Id::EntityId entityId) const {
-    assert(hasComponent(entityId));
     Id::ComponentIndex p = m_data.parent[getComponentIndex(entityId)];
     return (p == Id::invalidIndex) ? Id::invalidId : m_data.entity[p];
 }
 
 Id::EntityId TransformManager::getFirstChild(Id::EntityId entityId) const {
-    assert(hasComponent(entityId));
     Id::ComponentIndex fc = m_data.firstChild[getComponentIndex(entityId)];
     return (fc == Id::invalidIndex) ? Id::invalidId : m_data.entity[fc];
 }
 
 Id::EntityId TransformManager::getNextSibling(Id::EntityId entityId) const {
-    assert(hasComponent(entityId));
     Id::ComponentIndex ns = m_data.nextSibling[getComponentIndex(entityId)];
     return (ns == Id::invalidIndex) ? Id::invalidId : m_data.entity[ns];
 }
