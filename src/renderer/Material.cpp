@@ -1,7 +1,7 @@
-#include <Material.h>
-#include <Texture.h>
-#include <ShaderProgram.h>
-#include <ResourceManager.h>
+#include <renderer/Material.h>
+#include <renderer/Texture.h>
+#include <renderer/ShaderProgram.h>
+#include <core/ResourceManager.h>
 #include <iostream>
 
 Material::Material(std::shared_ptr<ShaderProgram> shader) 

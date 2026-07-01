@@ -1,6 +1,6 @@
-#include "Id.hpp"
-#include <TransformManager.hpp>
-#include <Scene.h>
+#include "ecs/Id.h"
+#include <ecs/TransformManager.h>
+#include <core/Scene.h>
 #include <imgui/imgui.h>
 #include <cstdlib>
 #include <cstring>

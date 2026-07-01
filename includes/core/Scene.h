@@ -1,9 +1,9 @@
 #pragma once
 #include <Camera.h>
-#include <EntityManager.hpp>
-#include <TransformManager.hpp>
-#include <NameManager.hpp>
-#include <CameraManager.hpp>
+#include <ecs/EntityManager.h>
+#include <ecs/TransformManager.h>
+#include <ecs/NameManager.h>
+#include <ecs/CameraManager.h>
 #include <memory>
 #include <vector>
 

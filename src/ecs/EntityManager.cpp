@@ -1,6 +1,6 @@
-#include "Id.hpp"
-#include <EntityManager.hpp>
-#include <Scene.h>
+#include "ecs/Id.h"
+#include <ecs/EntityManager.h>
+#include <core/Scene.h>
 #include <cassert>
 
 EntityManager::EntityManager(Scene* scene) : m_scene(scene), m_generations(), m_freeIndices() {

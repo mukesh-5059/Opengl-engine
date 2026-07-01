@@ -1,6 +1,6 @@
 #include <Entity.h>
-#include <Mesh.h>
-#include <Material.h>
+#include <renderer/Mesh.h>
+#include <renderer/Material.h>
 #include <glm/gtc/matrix_transform.hpp>
 
 Entity::Entity(std::shared_ptr<Mesh> mesh, std::shared_ptr<Material> material)

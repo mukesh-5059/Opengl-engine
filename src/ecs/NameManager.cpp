@@ -1,6 +1,6 @@
-#include "Id.hpp"
-#include <NameManager.hpp>
-#include <Scene.h>
+#include "ecs/Id.h"
+#include <ecs/NameManager.h>
+#include <core/Scene.h>
 #include <cassert>
 #include <imgui/imgui.h>
 #include <cstring>

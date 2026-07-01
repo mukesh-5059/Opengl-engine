@@ -3,10 +3,10 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <string>
-#include <Scene.h>
-
+#include <memory>
 
 class Renderer;
+class Scene;
 
 class Application {
     private:

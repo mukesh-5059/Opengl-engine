@@ -1,6 +1,7 @@
-#include <Application.h>
-#include <ResourceManager.h>
-#include <Renderer.h>
+#include <core/Application.h>
+#include <core/ResourceManager.h>
+#include <core/Scene.h>
+#include <renderer/Renderer.h>
 #include <iostream>
 
 #include <imgui/imgui.h>

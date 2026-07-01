@@ -1,5 +1,5 @@
 #pragma once
-#include "ResourceManager.h"
+#include <core/ResourceManager.h>
 #include <memory>
 #include <glm/glm.hpp>
 

@@ -1,6 +1,6 @@
-#include "Id.hpp"
-#include <CameraManager.hpp>
-#include <Scene.h>
+#include "ecs/Id.h"
+#include <ecs/CameraManager.h>
+#include <core/Scene.h>
 #include <cassert>
 #include <imgui/imgui.h>
 #include <cstdlib>

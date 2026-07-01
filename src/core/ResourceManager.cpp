@@ -1,9 +1,9 @@
-#include <ResourceManager.h>
-#include <Texture.h>
-#include <ShaderProgram.h>
-#include <Mesh.h>
-#include <Material.h>
-#include <Primitive.h>
+#include <core/ResourceManager.h>
+#include <renderer/Texture.h>
+#include <renderer/ShaderProgram.h>
+#include <renderer/Mesh.h>
+#include <renderer/Material.h>
+#include <renderer/Primitive.h>
 
 #include <iostream>
 #include <unordered_map>

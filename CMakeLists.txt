@@ -4,7 +4,7 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 find_package(OpenGL REQUIRED)
 
-file(GLOB src src/*.cpp)
+file(GLOB_RECURSE src src/*.cpp)
 file(GLOB imgui dependencies/lib/imgui/*.cpp)
 file(GLOB stbImage dependencies/lib/StbImage.c)
 
@@ -14,7 +14,7 @@ add_executable(GameEngine)
 target_sources(GameEngine PRIVATE ${imgui} dependencies/lib/glad.c ${stbImage} ${src})
 
 target_include_directories(GameEngine PRIVATE dependencies/includes)
-target_include_directories(GameEngine PRIVATE src/includes)
+target_include_directories(GameEngine PRIVATE includes)
 
 target_link_libraries(GameEngine PRIVATE 
     "${CMAKE_CURRENT_SOURCE_DIR}/dependencies/lib/libglfw3.a"

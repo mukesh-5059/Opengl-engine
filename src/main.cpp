@@ -1,4 +1,4 @@
-#include "Application.h"
+#include "core/Application.h"
 
 int main() {
     Application app("PixelShader Engine", 1280, 720);

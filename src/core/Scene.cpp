@@ -1,8 +1,8 @@
-#include <Scene.h>
-#include <ResourceManager.h>
+#include <core/Scene.h>
+#include <core/ResourceManager.h>
 #include <Entity.h>
-#include <Material.h>
-#include <Renderer.h>
+#include <renderer/Material.h>
+#include <renderer/Renderer.h>
 
 #include <iostream>
 #include <imgui/imgui.h>

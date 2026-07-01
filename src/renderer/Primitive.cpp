@@ -1,5 +1,5 @@
-#include <Primitive.h>
-#include <Mesh.h>
+#include <renderer/Primitive.h>
+#include <renderer/Mesh.h>
 
 #include <vector>
 #include <cmath>

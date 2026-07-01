@@ -1,6 +1,6 @@
-#include <Renderer.h>
-#include <Mesh.h>
-#include <Material.h>
+#include <renderer/Renderer.h>
+#include <renderer/Mesh.h>
+#include <renderer/Material.h>
 #include <Entity.h>
 #include <Camera.h>
 #include <glad/glad.h>

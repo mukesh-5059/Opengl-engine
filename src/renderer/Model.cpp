@@ -1,6 +1,6 @@
-#include <Model.h>
-#include <Mesh.h>
-#include <Material.h>
+#include <renderer/Model.h>
+#include <renderer/Mesh.h>
+#include <renderer/Material.h>
 #include <iostream>
 
 Model::Model(const std::vector<ModelMesh>& meshes) : m_meshes(meshes) {}
