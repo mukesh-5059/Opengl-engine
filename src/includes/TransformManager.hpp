@@ -67,6 +67,8 @@ class TransformManager {
         Id::EntityId getFirstChild(Id::EntityId entityId) const;
         Id::EntityId getNextSibling(Id::EntityId entityId) const;
 
+        void onInspectorGui(Id::EntityId entityId);
+
         void update();
 
         Id::ComponentIndex getEntityCount() const { return m_data.currentCount; }

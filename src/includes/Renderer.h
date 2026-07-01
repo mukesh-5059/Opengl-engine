@@ -27,7 +27,7 @@ public:
     Renderer();
     ~Renderer();
 
-    void beginScene(Camera* camera, int width, int height);
+    void beginScene(const glm::mat4& viewMatrix, const glm::mat4& projectionMatrix, const glm::vec3& cameraPosition);
     void submit(std::shared_ptr<Mesh> mesh, std::shared_ptr<Material> material, const glm::mat4& transform);
     void submit(std::shared_ptr<Entity> entity);
     void endScene();

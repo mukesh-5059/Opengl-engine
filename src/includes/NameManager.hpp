@@ -39,5 +39,7 @@ class NameManager {
         void setName(Id::EntityId entityId, const std::string& name);
         const std::string& getName(Id::EntityId entityId) const;
 
+        void onInspectorGui(Id::EntityId entityId);
+
         Id::EntityId findEntityByName(const std::string& name) const;
 };

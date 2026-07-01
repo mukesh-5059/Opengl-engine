@@ -1,6 +1,7 @@
 #include "Id.hpp"
 #include <TransformManager.hpp>
 #include <Scene.h>
+#include <imgui/imgui.h>
 #include <cstdlib>
 #include <cstring>
 #include <glm/gtc/matrix_transform.hpp>
@@ -312,3 +313,48 @@ void TransformManager::propagateTransform(Id::ComponentIndex index) {
 }
 
 void TransformManager::update() {}
+
+void TransformManager::onInspectorGui(Id::EntityId entityId) {
+    if (ImGui::CollapsingHeader("Transform Component", ImGuiTreeNodeFlags_DefaultOpen)) {
+        glm::vec3 pos = getPosition(entityId);
+        if (ImGui::DragFloat3("Position", &pos.x, 0.1f)) {
+            setPosition(entityId, pos);
+        }
+
+        glm::vec3 rot = getRotation(entityId);
+        if (ImGui::DragFloat3("Rotation", &rot.x, 1.0f)) {
+            setRotation(entityId, rot);
+        }
+
+        glm::vec3 scale = getScale(entityId);
+        if (ImGui::DragFloat3("Scale", &scale.x, 0.1f)) {
+            setScale(entityId, scale);
+        }
+    }
+
+    if (ImGui::CollapsingHeader("Scene Hierarchy Relations", ImGuiTreeNodeFlags_DefaultOpen)) {
+        Id::EntityId parent = getParent(entityId);
+        if (parent == Id::invalidId) {
+            ImGui::Text("Parent: None (Root)");
+        } else {
+            std::string parentName = m_scene->getNameManager().getName(parent);
+            ImGui::Text("Parent: %s [ID: %d]", parentName.c_str(), Id::indexOf(parent));
+        }
+
+        Id::EntityId firstChild = getFirstChild(entityId);
+        if (firstChild == Id::invalidId) {
+            ImGui::Text("First Child: None");
+        } else {
+            std::string childName = m_scene->getNameManager().getName(firstChild);
+            ImGui::Text("First Child: %s [ID: %d]", childName.c_str(), Id::indexOf(firstChild));
+        }
+
+        Id::EntityId nextSibling = getNextSibling(entityId);
+        if (nextSibling == Id::invalidId) {
+            ImGui::Text("Next Sibling: None");
+        } else {
+            std::string siblingName = m_scene->getNameManager().getName(nextSibling);
+            ImGui::Text("Next Sibling: %s [ID: %d]", siblingName.c_str(), Id::indexOf(nextSibling));
+        }
+    }
+}

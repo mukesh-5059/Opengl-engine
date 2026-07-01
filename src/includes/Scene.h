@@ -3,6 +3,7 @@
 #include <EntityManager.hpp>
 #include <TransformManager.hpp>
 #include <NameManager.hpp>
+#include <CameraManager.hpp>
 #include <memory>
 #include <vector>
 
@@ -17,7 +18,9 @@ class Scene {
         EntityManager m_entityManager;
         TransformManager m_transformManager;
         NameManager m_nameManager;
+        CameraManager m_cameraManager;
         Id::EntityId m_selectedEntityId = Id::invalidId;
+        Id::EntityId m_mainCameraEntity = Id::invalidId;
 
         void drawHierarchyNode(Id::EntityId entityId);
 
@@ -38,4 +41,7 @@ class Scene {
 
         NameManager& getNameManager() { return m_nameManager; }
         const NameManager& getNameManager() const { return m_nameManager; }
+
+        CameraManager& getCameraManager() { return m_cameraManager; }
+        const CameraManager& getCameraManager() const { return m_cameraManager; }
 };

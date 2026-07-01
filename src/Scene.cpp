@@ -9,7 +9,7 @@
 #include <memory>
 #include <string>
 
-Scene::Scene() : m_entityManager(this), m_transformManager(this), m_nameManager(this) {
+Scene::Scene() : m_entityManager(this), m_transformManager(this), m_nameManager(this), m_cameraManager(this) {
     std::cout << "[Scene] Initializing test scene..." << std::endl;
     
     auto baseShader = ResourceManager::loadShader("baseShader", "res/shaders/lit.vert", "res/shaders/lit.frag");
@@ -27,29 +27,27 @@ Scene::Scene() : m_entityManager(this), m_transformManager(this), m_nameManager(
         m_entities.push_back(cubeEntity);
     }
     
-    m_camera = new Camera(glm::vec3(-29.837f, 15.676f, 18.146f));
+    m_mainCameraEntity = m_entityManager.create("MainCamera");
+    m_transformManager.setPosition(m_mainCameraEntity, glm::vec3(0.0f, 0.0f, 30.0f));
+    m_cameraManager.create(m_mainCameraEntity);
 }
 
 Scene::~Scene() {
     std::cout << "[Scene] Cleaning up scene resources..." << std::endl;
-    delete m_camera;
 }
 
 void Scene::update(float deltaTime, GLFWwindow* window) {
-    if (m_camera) {
-        m_camera->captureInput(window, deltaTime);
-    }
-
-    //float time = (float)glfwGetTime();
-    //if (m_entities.size() >= 2) {
-    //    m_entities[0]->setRotation(glm::vec3(0.0f, time * 20.0f, 0.0f));
-    //    m_entities[1]->setRotation(glm::vec3(time * 30.0f, time * 30.0f, 0.0f));
-    //}
+    int width, height;
+    glfwGetFramebufferSize(window, &width, &height);
+    m_cameraManager.update(width, height);
 }
 
 void Scene::render(Renderer* renderer, int width, int height) {
-    if (m_camera && renderer) {
-        renderer->beginScene(m_camera, width, height);
+    if (renderer && m_cameraManager.hasComponent(m_mainCameraEntity)) {
+        glm::mat4 view = m_cameraManager.getViewMatrix(m_mainCameraEntity);
+        glm::mat4 proj = m_cameraManager.getProjectionMatrix(m_mainCameraEntity);
+        glm::vec3 pos = m_transformManager.getPosition(m_mainCameraEntity);
+        renderer->beginScene(view, proj, pos);
         
         for (const auto& entity : m_entities) {
             if (entity) {
@@ -148,64 +146,15 @@ void Scene::onHierarchyGui() {
 }
 
 void Scene::onInspectorGui() {
-    if (m_camera) {
-        m_camera->onGui();
-        ImGui::Separator();
-    }
-
     if (m_selectedEntityId != Id::invalidId) {
         ImGui::Text("Selected Entity: ID %d (Index %d Gen %d)", m_selectedEntityId, Id::indexOf(m_selectedEntityId), Id::generationOf(m_selectedEntityId));
         ImGui::Separator();
 
-        char nameBuffer[128];
-        strncpy(nameBuffer, m_nameManager.getName(m_selectedEntityId).c_str(), sizeof(nameBuffer));
-        nameBuffer[sizeof(nameBuffer) - 1] = '\0';
-        if (ImGui::InputText("Entity Name", nameBuffer, sizeof(nameBuffer))) {
-            m_nameManager.setName(m_selectedEntityId, nameBuffer);
-        }
-        ImGui::Separator();
+        m_nameManager.onInspectorGui(m_selectedEntityId);
+        m_transformManager.onInspectorGui(m_selectedEntityId);
 
-        if (ImGui::CollapsingHeader("Transform Component", ImGuiTreeNodeFlags_DefaultOpen)) {
-            glm::vec3 pos = m_transformManager.getPosition(m_selectedEntityId);
-            if (ImGui::DragFloat3("Position", &pos.x, 0.1f)) {
-                m_transformManager.setPosition(m_selectedEntityId, pos);
-            }
-
-            glm::vec3 rot = m_transformManager.getRotation(m_selectedEntityId);
-            if (ImGui::DragFloat3("Rotation", &rot.x, 1.0f)) {
-                m_transformManager.setRotation(m_selectedEntityId, rot);
-            }
-
-            glm::vec3 scale = m_transformManager.getScale(m_selectedEntityId);
-            if (ImGui::DragFloat3("Scale", &scale.x, 0.1f)) {
-                m_transformManager.setScale(m_selectedEntityId, scale);
-            }
-        }
-
-        if (ImGui::CollapsingHeader("Scene Hierarchy Relations", ImGuiTreeNodeFlags_DefaultOpen)) {
-            Id::EntityId parent = m_transformManager.getParent(m_selectedEntityId);
-            if (parent == Id::invalidId)
-                ImGui::Text("Parent: None (Root)");
-            else {
-                std::string parentName = m_nameManager.getName(parent);
-                ImGui::Text("Parent: %s [ID: %d]", parentName.c_str(), Id::indexOf(parent));
-            }
-
-            Id::EntityId firstChild = m_transformManager.getFirstChild(m_selectedEntityId);
-            if (firstChild == Id::invalidId)
-                ImGui::Text("First Child: None");
-            else {
-                std::string childName = m_nameManager.getName(firstChild);
-                ImGui::Text("First Child: %s [ID: %d]", childName.c_str(), Id::indexOf(firstChild));
-            }
-
-            Id::EntityId nextSibling = m_transformManager.getNextSibling(m_selectedEntityId);
-            if (nextSibling == Id::invalidId)
-                ImGui::Text("Next Sibling: None");
-            else {
-                std::string siblingName = m_nameManager.getName(nextSibling);
-                ImGui::Text("Next Sibling: %s [ID: %d]", siblingName.c_str(), Id::indexOf(nextSibling));
-            }
-        }
-    }
+        if (m_cameraManager.hasComponent(m_selectedEntityId))
+            m_cameraManager.onInspectorGui(m_selectedEntityId);
+    } else
+        ImGui::Text("Select an entity to view details.");
 }

@@ -26,23 +26,21 @@ Renderer::~Renderer() {
         glDeleteBuffers(1, &m_uboCamera);
 }
 
-void Renderer::beginScene(Camera* camera, int width, int height) {
+void Renderer::beginScene(const glm::mat4& viewMatrix, const glm::mat4& projectionMatrix, const glm::vec3& cameraPosition) {
     m_drawQueue.clear();
-    if (camera) {
-        m_viewMatrix = camera->getViewMatrix();
-        m_projectionMatrix = camera->getProjectionMatrix(width, height);
-        m_cameraPosition = camera->getPosition();
+    m_viewMatrix = viewMatrix;
+    m_projectionMatrix = projectionMatrix;
+    m_cameraPosition = cameraPosition;
 
-        CameraData data;
-        data.projection = m_projectionMatrix;
-        data.view = m_viewMatrix;
-        data.u_ViewPos = m_cameraPosition;
-        data.padding = 0.0f;
+    CameraData data;
+    data.projection = m_projectionMatrix;
+    data.view = m_viewMatrix;
+    data.u_ViewPos = m_cameraPosition;
+    data.padding = 0.0f;
 
-        glBindBuffer(GL_UNIFORM_BUFFER, m_uboCamera);
-        glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(CameraData), &data);
-        glBindBuffer(GL_UNIFORM_BUFFER, 0);
-    }
+    glBindBuffer(GL_UNIFORM_BUFFER, m_uboCamera);
+    glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(CameraData), &data);
+    glBindBuffer(GL_UNIFORM_BUFFER, 0);
 }
 
 void Renderer::submit(std::shared_ptr<Mesh> mesh, std::shared_ptr<Material> material, const glm::mat4& transform) {

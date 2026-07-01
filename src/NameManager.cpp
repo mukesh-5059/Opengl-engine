@@ -2,6 +2,8 @@
 #include <NameManager.hpp>
 #include <Scene.h>
 #include <cassert>
+#include <imgui/imgui.h>
+#include <cstring>
 
 NameManager::NameManager(Scene* scene) : m_scene(scene), m_map() {
     assert(m_scene != nullptr);
@@ -31,7 +33,6 @@ void NameManager::destroy(Id::EntityId entityId) {
     Id::ComponentIndex lastIndex = m_data.currentCount - 1;
 
     if (compIndex != lastIndex) {
-        // Swap-and-Pop
         m_data.entity[compIndex] = m_data.entity[lastIndex];
         m_data.name[compIndex] = std::move(m_data.name[lastIndex]);
 
@@ -60,4 +61,14 @@ Id::EntityId NameManager::findEntityByName(const std::string& name) const {
         }
     }
     return Id::invalidId;
+}
+
+void NameManager::onInspectorGui(Id::EntityId entityId) {
+    char nameBuffer[128];
+    strncpy(nameBuffer, getName(entityId).c_str(), sizeof(nameBuffer));
+    nameBuffer[sizeof(nameBuffer) - 1] = '\0';
+    if (ImGui::InputText("Entity Name", nameBuffer, sizeof(nameBuffer))) {
+        setName(entityId, nameBuffer);
+    }
+    ImGui::Separator();
 }
